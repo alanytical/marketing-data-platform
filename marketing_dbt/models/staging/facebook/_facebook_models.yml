@@ -1,0 +1,57 @@
+version: 2
+
+models:
+  - name: stg_facebook_accounts
+    description: Cleaned Facebook advertising account metadata.
+    columns:
+      - name: account_id
+        data_tests:
+          - not_null
+          - unique
+
+  - name: stg_facebook_adgroups
+    description: Cleaned Facebook ad group metadata.
+    columns:
+      - name: ad_group_id
+        data_tests:
+          - not_null
+          - unique
+
+  - name: stg_facebook_ads
+    description: Cleaned Facebook ad-level metadata.
+    columns:
+      - name: ad_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: account_id
+        data_tests:
+          - not_null
+
+      - name: campaign_id
+        data_tests:
+          - not_null
+
+      - name: ad_group_id
+        data_tests:
+          - not_null
+
+  - name: stg_facebook_campaigns
+    description: Cleaned Facebook campaign metadata.
+    columns:
+      - name: campaign_id
+        data_tests:
+          - not_null
+          - unique
+
+  - name: stg_facebook_ads_stats
+    description: Daily Facebook ad performance at ad_id plus ad_date grain.
+    columns:
+      - name: ad_id
+        data_tests:
+          - not_null
+
+      - name: ad_date
+        data_tests:
+          - not_null

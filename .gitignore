@@ -1,0 +1,22 @@
+# Python / uv
+.venv/
+__pycache__/
+*.pyc
+
+# Secrets
+.env
+.env.*
+profiles.yml
+
+# dbt generated files
+marketing_dbt/target/
+marketing_dbt/logs/
+marketing_dbt/dbt_packages/
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/
+
+# Root logs
+/logs/

@@ -1,0 +1,130 @@
+name: dbt CI/CD
+
+on:
+  pull_request:
+    branches:
+      - main
+
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: dbt CI
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_HTTP_PATH: ${{ secrets.DATABRICKS_HTTP_PATH }}
+      DATABRICKS_CI_TOKEN: ${{ secrets.DATABRICKS_CI_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install uv
+        run: python -m pip install uv
+
+      - name: Install project dependencies
+        run: uv sync --locked
+
+      - name: Configure dbt profile
+        run: |
+          mkdir -p ~/.dbt
+
+          cat > ~/.dbt/profiles.yml <<'EOF'
+          marketing_dbt:
+            target: ci
+
+            outputs:
+              ci:
+                type: databricks
+                host: "{{ env_var('DATABRICKS_HOST') }}"
+                http_path: "{{ env_var('DATABRICKS_HTTP_PATH') }}"
+                catalog: workspace
+                schema: marketing_ci
+                threads: 1
+                token: "{{ env_var('DATABRICKS_CI_TOKEN') }}"
+          EOF
+
+      - name: Install dbt packages
+        working-directory: marketing_dbt
+        run: uv run dbt deps
+
+      - name: Validate CI connection
+        working-directory: marketing_dbt
+        run: uv run dbt debug --target ci
+
+      - name: Build and test dbt project
+        working-directory: marketing_dbt
+        run: uv run dbt build --target ci --select package:marketing_dbt
+
+
+  production:
+    name: dbt Production Deployment
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_HTTP_PATH: ${{ secrets.DATABRICKS_HTTP_PATH }}
+      DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
+      DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install uv
+        run: python -m pip install uv
+
+      - name: Install project dependencies
+        run: uv sync --locked
+
+      - name: Configure dbt production profile
+        run: |
+          mkdir -p ~/.dbt
+
+          cat > ~/.dbt/profiles.yml <<'EOF'
+          marketing_dbt:
+            target: prod
+
+            outputs:
+              prod:
+                type: databricks
+                host: "{{ env_var('DATABRICKS_HOST') }}"
+                http_path: "{{ env_var('DATABRICKS_HTTP_PATH') }}"
+                catalog: workspace
+                schema: marketing_prod
+                threads: 1
+                auth_type: oauth
+                client_id: "{{ env_var('DATABRICKS_CLIENT_ID') }}"
+                client_secret: "{{ env_var('DATABRICKS_CLIENT_SECRET') }}"
+          EOF
+
+      - name: Install dbt packages
+        working-directory: marketing_dbt
+        run: uv run dbt deps
+
+      - name: Validate production connection
+        working-directory: marketing_dbt
+        run: uv run dbt debug --target prod
+
+      - name: Deploy and test production
+        working-directory: marketing_dbt
+        run: uv run dbt build --target prod --select package:marketing_dbt

@@ -1,0 +1,35 @@
+version: 2
+
+sources:
+  - name: marketing_raw
+    database: workspace
+    schema: marketing_raw
+    description: Raw Facebook and Snapchat advertising data loaded into Databricks.
+
+    tables:
+      - name: facebook_ads_stats
+        description: Daily Facebook ad performance data.
+
+      - name: facebook_accounts
+        description: Facebook advertising account metadata.
+
+      - name: facebook_adgroups
+        description: Facebook ad group metadata.
+
+      - name: facebook_ads
+        description: Facebook ad metadata.
+
+      - name: facebook_campaigns
+        description: Facebook campaign metadata.
+
+      - name: snapchat_ads_stats
+        description: Daily Snapchat advertising performance by ad and country.
+
+      - name: snapchat_ads_history
+        description: Snapchat ad metadata and historical ad names.
+
+      - name: snapchat_adgroup_history
+        description: Snapchat ad group history containing multiple versions for some ad groups.
+
+      - name: snapchat_campaign_history
+        description: Snapchat campaign metadata.

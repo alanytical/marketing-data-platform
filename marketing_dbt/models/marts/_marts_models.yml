@@ -1,0 +1,52 @@
+version: 2
+
+models:
+  - name: fct_marketing_performance
+    description: >
+      Unified Facebook and Snapchat advertising performance fact table.
+      Facebook is at ad_id plus ad_date grain. Snapchat is at
+      ad_id plus ad_date plus country grain.
+
+    columns:
+      - name: marketing_performance_key
+        description: Stable surrogate key for each performance record.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: ad_date
+        data_tests:
+          - not_null
+
+      - name: platform
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['facebook', 'snapchat']
+
+      - name: ad_id
+        data_tests:
+          - not_null
+
+      - name: currency_code
+        data_tests:
+          - not_null
+
+      - name: spend
+        description: Advertising spend in the original source currency.
+
+      - name: impressions
+        description: Number of advertising impressions.
+
+      - name: clicks
+        description: Number of advertising clicks.
+
+      - name: ctr
+        description: Click-through rate calculated as clicks divided by impressions.
+
+      - name: cpc
+        description: Cost per click calculated as spend divided by clicks.
+
+      - name: cpm
+        description: Cost per thousand impressions.

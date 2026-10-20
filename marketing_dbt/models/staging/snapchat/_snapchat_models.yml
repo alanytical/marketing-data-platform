@@ -1,0 +1,57 @@
+version: 2
+
+models:
+  - name: stg_snapchat_ads
+    description: Cleaned Snapchat ad metadata.
+    columns:
+      - name: ad_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: ad_group_id
+        data_tests:
+          - not_null
+
+  - name: stg_snapchat_adgroups
+    description: Latest Snapchat ad group record per ad_group_id.
+    columns:
+      - name: ad_group_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: campaign_id
+        data_tests:
+          - not_null
+
+  - name: stg_snapchat_campaigns
+    description: Cleaned Snapchat campaign metadata.
+    columns:
+      - name: campaign_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: account_id
+        data_tests:
+          - not_null
+
+  - name: stg_snapchat_ads_stats
+    description: Snapchat performance at ad_id, ad_date and country grain.
+    columns:
+      - name: ad_id
+        data_tests:
+          - not_null
+
+      - name: ad_date
+        data_tests:
+          - not_null
+
+      - name: country
+        data_tests:
+          - not_null
+
+      - name: currency_code
+        data_tests:
+          - not_null
