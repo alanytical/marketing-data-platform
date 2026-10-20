@@ -87,12 +87,7 @@ Elementary is configured to monitor:
 - dbt test results
 - model health
 - data quality
-- historical test behavior
-## CI/CD
-
-Pull requests run dbt validation in the CI environment.
-
-Pushes to `main` deploy to production using GitHub Actions and Databricks Service Principal authentication.
+- historical test behavior.
 ## CI/CD
 
 Pull requests run dbt validation in the CI environment.
